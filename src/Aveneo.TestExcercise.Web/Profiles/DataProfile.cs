@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Aveneo.TestExcercise.ApplicationCore.Entities;
 using Aveneo.TestExcercise.Web.ViewModels;
+using System.Linq;
 
 namespace Aveneo.TestExcercise.Web.Profiles
 {
@@ -8,7 +9,7 @@ namespace Aveneo.TestExcercise.Web.Profiles
     {
         public DataProfile()
         {
-            CreateMap<Feature, FeatureViewModel>();
+            CreateMap<Feature, FeatureViewModel>().ReverseMap();
         }
     }
 }
