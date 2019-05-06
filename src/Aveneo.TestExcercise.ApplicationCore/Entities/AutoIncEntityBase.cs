@@ -3,9 +3,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Aveneo.TestExcercise.ApplicationCore.Entities
 {
-    public class Feature
-        : AutoIncEntityBase
+    public abstract class AutoIncEntityBase : EntityBase
     {
-        public string IconName { get; set; }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public new int Id { get; set; }
     }
 }

@@ -4,10 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Aveneo.TestExcercise.ApplicationCore.Entities
 {
     public class DataObjectFeature
+        : AutoIncEntityBase
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
         [Required]
         public DataObject DataObject { get; set; }
         [Required]
