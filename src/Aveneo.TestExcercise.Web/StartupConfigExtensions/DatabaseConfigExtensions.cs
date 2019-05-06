@@ -1,4 +1,6 @@
-﻿using Aveneo.TestExcercise.Infrastructure.Data;
+﻿using Aveneo.TestExcercise.ApplicationCore;
+using Aveneo.TestExcercise.ApplicationCore.Entities;
+using Aveneo.TestExcercise.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +15,9 @@ namespace Aveneo.TestExcercise.Web.StartupConfigExtensions
                 options.UseSqlServer(
                     configuration.GetConnectionString("Data"), 
                     o => o.MigrationsAssembly(typeof(DataContext).Assembly.FullName)));
+
+            services.AddTransient<IRepository<DataObject>, EfcRepository<DataObject, DataContext>>();
+            services.AddTransient<IRepository<Feature>, EfcRepository<Feature, DataContext>>();
         }
     }
 }
