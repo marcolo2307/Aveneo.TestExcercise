@@ -26,7 +26,7 @@ namespace Aveneo.TestExcercise.Infrastructure.Data
             return await _context.Set<TEntity>().ToListAsync();
         }
 
-        public async Task<TEntity> FindByIdAsync(string id)
+        public async Task<TEntity> FindByIdAsync(int id)
         {
             return await _context.Set<TEntity>().FindAsync(id);
         }

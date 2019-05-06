@@ -10,7 +10,7 @@ namespace Aveneo.TestExcercise.ApplicationCore
     {
         Task<ICollection<TEntity>> GetAllAsync();
 
-        Task<TEntity> FindByIdAsync(string id);
+        Task<TEntity> FindByIdAsync(int id);
         Task<TEntity> FirstAsync(Expression<Func<TEntity, bool>> predicate);
         Task<ICollection<TEntity>> WhereAsync(Expression<Func<TEntity, bool>> predicate);
 
