@@ -4,9 +4,29 @@
     <meta name="viewport" content="width=device-width" />
     <meta charset="utf-8" />
     <title>@ViewBag.Title</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
 </head>
 <body>
-    <div>
+    <div class="container-fluid bg-dark">
+        <div class="container">
+            <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">Aveneo</a>
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" asp-controller="Objects" asp-action="Index">Objects</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" asp-controller="Features" asp-action="Index">Features</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <div class="container bg-light">
         @RenderBody()
     </div>
 </body>
