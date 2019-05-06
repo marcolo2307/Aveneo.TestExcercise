@@ -19,6 +19,7 @@ namespace Aveneo.TestExcercise.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.ConfigureDatabase(_configuration);
+            services.ConfigureMapping(_configuration);
             services.ConfigureRouting();
         }
 
