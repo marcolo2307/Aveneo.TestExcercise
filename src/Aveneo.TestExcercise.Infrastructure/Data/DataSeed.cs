@@ -1,17 +1,28 @@
 ﻿using Aveneo.TestExcercise.ApplicationCore.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace Aveneo.TestExcercise.Infrastructure.Data
 {
     public static class DataSeed
     {
-        public static void SeedFeatures(this ModelBuilder builder)
+        public static void SeedFeatures(DataContext context)
         {
-            builder.Entity<Feature>().HasData(
-                new Feature { Id = -1, IconName = "fas-fa-mountain" },
-                new Feature { Id = -2, IconName = "fas-fa-bike" },
-                new Feature { Id = -3, IconName = "fas fa-swimmer" },
-                new Feature { Id = -4, IconName = "fas fa-trees" });
+            var getData = context.Set<Feature>().ToArrayAsync();
+            getData.Wait();
+
+            if (getData.Result.Length > 0)
+                return;
+
+            var features = new List<Feature>
+            {
+                new Feature { IconName = "fas-fa-mountain" },
+                new Feature { IconName = "fas-fa-camera" },
+                new Feature { IconName = "fas fa-fish" }
+            };
+
+            context.Set<Feature>().AddRange(features);
+            context.SaveChanges();
         }
     }
 }

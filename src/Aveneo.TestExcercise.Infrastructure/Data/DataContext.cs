@@ -26,8 +26,6 @@ namespace Aveneo.TestExcercise.Infrastructure.Data
                 .HasOne(e => e.DataObject)
                 .WithMany(e => e.Features)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            builder.SeedFeatures();
         }
     }
 }
