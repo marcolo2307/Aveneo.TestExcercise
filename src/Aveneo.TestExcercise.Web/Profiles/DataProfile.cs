@@ -22,6 +22,13 @@ namespace Aveneo.TestExcercise.Web.Profiles
                 }))
                 .ForMember(e => e.Features, o => o.Ignore());
 
+            CreateMap<EditDataObjectViewModel, DataObjectViewModel>()
+                .ForMember(e => e.Features, o => o.Ignore());
+
+            CreateMap<DataObjectViewModel, EditDataObjectViewModel>()
+                .ForMember(e => e.AvailableFeatures, o => o.Ignore())
+                .ForMember(e => e.Selections, o => o.Ignore());
+
             CreateMap<Feature, FeatureViewModel>().ReverseMap();
         }
     }

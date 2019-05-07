@@ -6,20 +6,30 @@ using Aveneo.TestExcercise.ApplicationCore;
 using AutoMapper;
 using Aveneo.TestExcercise.Web.ViewModels;
 using Aveneo.TestExcercise.Web.Services;
+using System.Linq;
 
 namespace Aveneo.TestExcercise.Web.Controllers
 {
     public class DataObjectsController : Controller
     {
-        private IRepository<DataObject> _dataObjects { get; }
         private IMapper _mapper { get; }
         private IIconDecoder _iconDecoder { get; }
+        private IDataObjectService _dataObjectService { get; }
+        private IRepository<DataObject> _dataObjects { get; }
+        private IRepository<Feature> _features { get; }
 
-        public DataObjectsController(IRepository<DataObject> dataObjects, IMapper mapper, IIconDecoder iconDecoder)
+        public DataObjectsController(
+            IMapper mapper,
+            IIconDecoder iconDecoder,
+            IDataObjectService dataObjectService,
+            IRepository<DataObject> dataObjects,
+            IRepository<Feature> features)
         {
-            _dataObjects = dataObjects;
             _mapper = mapper;
             _iconDecoder = iconDecoder;
+            _dataObjectService = dataObjectService;
+            _dataObjects = dataObjects;
+            _features = features;
         }
 
         // GET: DataObjects
@@ -43,8 +53,8 @@ namespace Aveneo.TestExcercise.Web.Controllers
                 return NotFound();
 
             var viewModel = _mapper.Map<DataObjectViewModel>(dataObject);
-            if (viewModel.Features == null)
-                viewModel.Features = new List<FeatureViewModel>();
+            var features = dataObject.Features?.Select(e => e.Feature);
+            viewModel.Features = _mapper.Map<ICollection<FeatureViewModel>>(features);
 
             foreach (var f in viewModel.Features)
                 f.IconHtml = _iconDecoder.Decode(f.IconName);
@@ -53,18 +63,42 @@ namespace Aveneo.TestExcercise.Web.Controllers
         }
 
         // GET: DataObjects/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            var features = new List<Feature>(await _features.GetAllAsync());
+
+            var viewModel = new EditDataObjectViewModel
+            {
+                AvailableFeatures = features,
+                Selections = new List<bool>(new bool[features.Count]),
+                SelectionsIds = new List<int>(new int[features.Count])
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(DataObjectViewModel viewModel)
+        public async Task<IActionResult> Create(EditDataObjectViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
-                var dataObject = _mapper.Map<DataObject>(viewModel);
+                var intermediateViewModel = _mapper.Map<DataObjectViewModel>(viewModel);
+                var dataObject = _mapper.Map<DataObject>(intermediateViewModel);
+
+                var selected = new List<Feature>();
+                for (var i = 0; i < viewModel.Selections.Count; i++)
+                {
+                    if (viewModel.Selections[i])
+                    {
+                        var id = viewModel.SelectionsIds[i];
+                        var feature = await _features.FindByIdAsync(id);
+                        selected.Add(feature);
+                    }
+                }
+
                 await _dataObjects.CreateAsync(dataObject);
+                await _dataObjectService.SetFeaturesAsync(dataObject, selected);
+
                 return RedirectToAction(nameof(Index));
             }
             return View(viewModel);
