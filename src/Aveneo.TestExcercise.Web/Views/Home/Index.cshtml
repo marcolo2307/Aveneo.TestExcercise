@@ -10,7 +10,7 @@
     .Build(columns =>
     {
         columns.Add(m => m.Name).Titled("Name");
-        columns.Add(m => m.Price).Titled("Price").Formatted("C");
+        columns.Add(m => m.Price).Titled("Price").Formatted("{0:C}");
         columns.Add(m => m.Description).Titled("Description");
         columns.Add(m => m.Features).Titled("Features").RenderedAs(m => Html.Raw(m.Features)); 
     })
