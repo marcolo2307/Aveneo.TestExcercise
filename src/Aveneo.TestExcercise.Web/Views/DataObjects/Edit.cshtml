@@ -1,4 +1,4 @@
-﻿@model DataObjectViewModel
+﻿@model EditDataObjectViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -36,6 +36,18 @@
                 <label asp-for="Latitude" class="control-label"></label>
                 <input asp-for="Latitude" class="form-control" />
                 <span asp-validation-for="Latitude" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <ul>
+                    @for (var i = 0; i < Model.AvailableFeatures.Count; i++)
+                    {
+                        <li>
+                            <label asp-for="AvailableFeatures[i].IconName"></label>
+                            <input asp-for="Selections[i]" type="checkbox" />
+                            <input asp-for="SelectionsIds[i]" type="hidden" value="@Model.AvailableFeatures[i].Id" />
+                        </li>
+                    }
+                </ul>
             </div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">

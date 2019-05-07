@@ -115,12 +115,24 @@ namespace Aveneo.TestExcercise.Web.Controllers
                 return NotFound();
 
             var viewModel = _mapper.Map<DataObjectViewModel>(dataObject);
+            var features = dataObject.Features?.Select(e => e.Feature);
+            viewModel.Features = _mapper.Map<ICollection<FeatureViewModel>>(features);
 
-            return View(viewModel);
+            var editViewModel = _mapper.Map<EditDataObjectViewModel>(viewModel);
+            editViewModel.AvailableFeatures = new List<Feature>(await _features.GetAllAsync());
+            editViewModel.Selections = new List<bool>(new bool[editViewModel.AvailableFeatures.Count]);
+
+            foreach (var f in dataObject.Features.Select(e => e.Feature))
+            {
+                var index = editViewModel.AvailableFeatures.IndexOf(f);
+                editViewModel.Selections[index] = true;
+            }
+
+            return View(editViewModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, DataObjectViewModel viewModel)
+        public async Task<IActionResult> Edit(int id, EditDataObjectViewModel viewModel)
         {
             var dataObject = await _dataObjects.FindByIdAsync(id);
             if (dataObject == null)
@@ -128,9 +140,23 @@ namespace Aveneo.TestExcercise.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                _mapper.Map(viewModel, dataObject);
+                var intermediateViewModel = _mapper.Map<DataObjectViewModel>(viewModel);
+                _mapper.Map(intermediateViewModel, dataObject);
 
                 await _dataObjects.UpdateAsync(dataObject);
+
+                var selected = new List<Feature>();
+                for (var i = 0; i < viewModel.Selections.Count; i++)
+                {
+                    if (viewModel.Selections[i])
+                    {
+                        var fid = viewModel.SelectionsIds[i];
+                        var feature = await _features.FindByIdAsync(fid);
+                        selected.Add(feature);
+                    }
+                }
+                await _dataObjectService.SetFeaturesAsync(dataObject, selected);
+
                 return RedirectToAction(nameof(Index));
             }
             return View(viewModel);
