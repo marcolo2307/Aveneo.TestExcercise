@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Aveneo.TestExcercise.ApplicationCore.Entities;
-using Aveneo.TestExcercise.Infrastructure.Data;
 using Aveneo.TestExcercise.ApplicationCore;
 using AutoMapper;
 using Aveneo.TestExcercise.Web.ViewModels;
+using Aveneo.TestExcercise.Web.Services;
 
 namespace Aveneo.TestExcercise.Web.Controllers
 {
@@ -17,11 +13,13 @@ namespace Aveneo.TestExcercise.Web.Controllers
     {
         private IRepository<DataObject> _dataObjects { get; }
         private IMapper _mapper { get; }
+        private IIconDecoder _iconDecoder { get; }
 
-        public DataObjectsController(IRepository<DataObject> dataObjects, IMapper mapper)
+        public DataObjectsController(IRepository<DataObject> dataObjects, IMapper mapper, IIconDecoder iconDecoder)
         {
             _dataObjects = dataObjects;
             _mapper = mapper;
+            _iconDecoder = iconDecoder;
         }
 
         // GET: DataObjects
@@ -45,6 +43,11 @@ namespace Aveneo.TestExcercise.Web.Controllers
                 return NotFound();
 
             var viewModel = _mapper.Map<DataObjectViewModel>(dataObject);
+            if (viewModel.Features == null)
+                viewModel.Features = new List<FeatureViewModel>();
+
+            foreach (var f in viewModel.Features)
+                f.IconHtml = _iconDecoder.Decode(new Feature { IconName = f.IconName });
 
             return View(viewModel);
         }

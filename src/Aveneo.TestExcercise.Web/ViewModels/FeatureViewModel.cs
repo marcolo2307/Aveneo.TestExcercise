@@ -7,5 +7,6 @@ namespace Aveneo.TestExcercise.Web.ViewModels
         public int Id { get; set; }
         [Required]
         public string IconName { get; set; }
+        public string IconHtml { get; set; }
     }
 }

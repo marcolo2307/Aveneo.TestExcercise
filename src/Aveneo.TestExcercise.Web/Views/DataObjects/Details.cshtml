@@ -40,6 +40,24 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Latitude)
         </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayFor(model => model.Features)
+        </dt>
+        <dd class="col-sm-10">
+            @if (Model.Features.Count > 0)
+            {
+                <ul>
+                    @foreach (var feature in Model.Features)
+                    {
+                        <li>@Html.Raw(feature.IconHtml) | @feature.Id  | @feature.IconName</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <span class="text-warning">No features!</span>
+            }
+        </dd>
     </dl>
 </div>
 <div>
