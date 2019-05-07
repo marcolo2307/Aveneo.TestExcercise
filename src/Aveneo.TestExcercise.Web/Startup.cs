@@ -1,4 +1,5 @@
-﻿using Aveneo.TestExcercise.Web.StartupConfigExtensions;
+﻿using Aveneo.TestExcercise.Web.Services;
+using Aveneo.TestExcercise.Web.StartupConfigExtensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -21,6 +22,8 @@ namespace Aveneo.TestExcercise.Web
             services.ConfigureDatabase(_configuration);
             services.ConfigureMapping(_configuration);
             services.ConfigureRouting();
+
+            services.AddTransient<IIconDecoder, FontAwesomeDecoder>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
