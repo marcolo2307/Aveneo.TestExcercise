@@ -1,10 +1,11 @@
-﻿using Aveneo.TestExcercise.Web.Services;
+﻿using Aveneo.TestExcercise.ApplicationCore;
+using Aveneo.TestExcercise.ApplicationCore.Services;
+using Aveneo.TestExcercise.Web.Services;
 using Aveneo.TestExcercise.Web.StartupConfigExtensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace Aveneo.TestExcercise.Web
 {
@@ -24,6 +25,7 @@ namespace Aveneo.TestExcercise.Web
             services.ConfigureRouting();
 
             services.AddTransient<IIconDecoder, FontAwesomeDecoder>();
+            services.AddTransient<IDataObjectService, DataObjectService>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
