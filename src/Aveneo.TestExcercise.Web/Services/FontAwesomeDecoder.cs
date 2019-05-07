@@ -4,9 +4,9 @@ namespace Aveneo.TestExcercise.Web.Services
 {
     public class FontAwesomeDecoder : IIconDecoder
     {
-        public string Decode(Feature feature)
+        public string Decode(string feature)
         {
-            return $"<i class=\"{feature.IconName}\"></i>";
+            return $"<i class=\"{feature}\"></i>";
         }
     }
 }

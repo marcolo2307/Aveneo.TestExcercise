@@ -47,7 +47,7 @@ namespace Aveneo.TestExcercise.Web.Controllers
                 viewModel.Features = new List<FeatureViewModel>();
 
             foreach (var f in viewModel.Features)
-                f.IconHtml = _iconDecoder.Decode(new Feature { IconName = f.IconName });
+                f.IconHtml = _iconDecoder.Decode(f.IconName);
 
             return View(viewModel);
         }

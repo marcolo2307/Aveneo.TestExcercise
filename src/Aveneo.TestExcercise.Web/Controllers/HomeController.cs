@@ -33,7 +33,7 @@ namespace Aveneo.TestExcercise.Web.Controllers
                     {
                         if (f.Feature == null)
                             continue;
-                        var icon = _iconDecoder.Decode(f.Feature);
+                        var icon = _iconDecoder.Decode(f.Feature.IconName);
                         sb.Append(icon);
                     }
                 }

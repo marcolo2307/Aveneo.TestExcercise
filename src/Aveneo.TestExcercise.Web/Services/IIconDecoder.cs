@@ -6,6 +6,6 @@ namespace Aveneo.TestExcercise.Web.Services
 {
     public interface IIconDecoder
     {
-        string Decode(Feature features);
+        string Decode(string feature);
     }
 }
