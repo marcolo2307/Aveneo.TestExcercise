@@ -16,7 +16,7 @@ namespace Aveneo.TestExcercise.Web.StartupConfigExtensions
                     configuration.GetConnectionString("Data"), 
                     o => o.MigrationsAssembly(typeof(DataContext).Assembly.FullName)));
 
-            services.AddTransient<IRepository<DataObject>, EfcRepository<DataObject, DataContext>>();
+            services.AddTransient<IRepository<DataObject>, DataObjectRepository>();
             services.AddTransient<IRepository<Feature>, EfcRepository<Feature, DataContext>>();
             services.AddTransient<IRepository<DataObjectFeature>, EfcRepository<DataObjectFeature, DataContext>>();
         }

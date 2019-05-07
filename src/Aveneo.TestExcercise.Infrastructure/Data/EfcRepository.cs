@@ -14,29 +14,29 @@ namespace Aveneo.TestExcercise.Infrastructure.Data
         where TEntity : EntityBase
         where TContext : DbContext
     {
-        private DbContext _context { get; }
+        protected DbContext _context { get; }
 
         public EfcRepository(TContext context)
         {
             _context = context;
         }
 
-        public async Task<ICollection<TEntity>> GetAllAsync()
+        public async virtual Task<ICollection<TEntity>> GetAllAsync()
         {
             return await _context.Set<TEntity>().ToListAsync();
         }
 
-        public async Task<TEntity> FindByIdAsync(int id)
+        public async virtual Task<TEntity> FindByIdAsync(int id)
         {
             return await _context.Set<TEntity>().FindAsync(id);
         }
 
-        public async Task<TEntity> FirstAsync(Expression<Func<TEntity, bool>> predicate)
+        public async virtual Task<TEntity> FirstAsync(Expression<Func<TEntity, bool>> predicate)
         {
             return await _context.Set<TEntity>().FirstOrDefaultAsync(predicate);
         }
 
-        public async Task<ICollection<TEntity>> WhereAsync(Expression<Func<TEntity, bool>> predicate)
+        public async virtual Task<ICollection<TEntity>> WhereAsync(Expression<Func<TEntity, bool>> predicate)
         {
             return await _context.Set<TEntity>().Where(predicate).ToListAsync();
         }

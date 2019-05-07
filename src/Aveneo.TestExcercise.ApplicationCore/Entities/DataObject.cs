@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Aveneo.TestExcercise.ApplicationCore.Entities
 {
     public class DataObject 
-        : AutoIncEntityBase
+        : EntityBase
     {
         [Required]
         public string Name { get; set; }
