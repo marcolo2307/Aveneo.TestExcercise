@@ -43,8 +43,9 @@
                     {
                         <li>
                             <label asp-for="AvailableFeatures[i].IconName"></label>
+                            @Model.AvailableFeatures[i].IconName
                             <input asp-for="Selections[i]" type="checkbox" />
-                            <input asp-for="SelectionsIds[i]" type="hidden" value="@Model.AvailableFeatures[i].Id"/>
+                            <input asp-for="SelectionsIds[i]" type="hidden" value="@Model.AvailableFeatures[i].Id" />
                         </li>
                     }
                 </ul>
