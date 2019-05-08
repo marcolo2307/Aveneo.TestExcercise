@@ -6,6 +6,7 @@ namespace Aveneo.TestExcercise.ApplicationCore
 {
     public interface IDataObjectService
     {
-        Task SetFeaturesAsync(DataObject dataObject, ICollection<Feature> features);
+        Task SetFeaturesAsync(DataObject dataObject, IEnumerable<Feature> features);
+        Task<ICollection<Feature>> GetFeaturesAsync(DataObject dataObject);
     }
 }
