@@ -15,6 +15,5 @@ namespace Aveneo.TestExcercise.ApplicationCore.Entities
         public string Description { get; set; }
         [Required]
         public Geography Location { get; set; }
-        public ICollection<DataObjectFeature> Features { get; set; }
     }
 }

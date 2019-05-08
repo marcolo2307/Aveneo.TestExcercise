@@ -6,8 +6,8 @@ namespace Aveneo.TestExcercise.ApplicationCore.Entities
         : EntityBase
     {
         [Required]
-        public DataObject DataObject { get; set; }
+        public int DataObjectId { get; set; }
         [Required]
-        public Feature Feature { get; set; }
+        public int FeatureId { get; set; }
     }
 }

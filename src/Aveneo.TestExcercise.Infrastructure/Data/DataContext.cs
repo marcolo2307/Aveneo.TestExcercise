@@ -21,11 +21,6 @@ namespace Aveneo.TestExcercise.Infrastructure.Data
         {
             builder.Entity<DataObject>()
                 .OwnsOne(e => e.Location);
-
-            builder.Entity<DataObjectFeature>()
-                .HasOne(e => e.DataObject)
-                .WithMany(e => e.Features)
-                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
