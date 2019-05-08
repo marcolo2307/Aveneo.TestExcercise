@@ -15,30 +15,40 @@ namespace Aveneo.TestExcercise.Infrastructure.Data
         where TContext : DbContext
     {
         protected DbContext _context { get; }
+        private Func<DbSet<TEntity>, IQueryable<TEntity>> _includies { get; }
 
         public EfcRepository(TContext context)
         {
             _context = context;
+            _includies = set => set.AsQueryable();
         }
 
-        public async virtual Task<ICollection<TEntity>> GetAllAsync()
+        public EfcRepository(TContext context, Func<DbSet<TEntity>, IQueryable<TEntity>> includies)
+        {
+            _context = context;
+            _includies = includies;
+        }
+
+        protected IQueryable<TEntity> GetEntities() => _includies(_context.Set<TEntity>());
+
+        public async Task<ICollection<TEntity>> GetAllAsync()
         {
             return await _context.Set<TEntity>().ToListAsync();
         }
 
-        public async virtual Task<TEntity> FindByIdAsync(int id)
+        public Task<TEntity> FindByIdAsync(int id)
         {
-            return await _context.Set<TEntity>().FindAsync(id);
+            return FirstAsync(e => e.Id == id);
         }
 
-        public async virtual Task<TEntity> FirstAsync(Expression<Func<TEntity, bool>> predicate)
+        public async Task<TEntity> FirstAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return await _context.Set<TEntity>().FirstOrDefaultAsync(predicate);
+            return await GetEntities().FirstOrDefaultAsync(predicate);
         }
 
-        public async virtual Task<ICollection<TEntity>> WhereAsync(Expression<Func<TEntity, bool>> predicate)
+        public async Task<ICollection<TEntity>> WhereAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return await _context.Set<TEntity>().Where(predicate).ToListAsync();
+            return await GetEntities().Where(predicate).ToListAsync();
         }
 
         public async Task CreateAsync(TEntity entity)
@@ -47,7 +57,7 @@ namespace Aveneo.TestExcercise.Infrastructure.Data
             await _context.SaveChangesAsync();
         }
 
-        public async Task CreateAsync(TEntity[] entites)
+        public async Task CreateAsync(IEnumerable<TEntity> entites)
         {
             _context.Set<TEntity>().AddRange(entites);
             await _context.SaveChangesAsync();
@@ -59,7 +69,7 @@ namespace Aveneo.TestExcercise.Infrastructure.Data
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(TEntity[] entites)
+        public async Task UpdateAsync(IEnumerable<TEntity> entites)
         {
             _context.Set<TEntity>().UpdateRange(entites);
             await _context.SaveChangesAsync();
@@ -71,7 +81,7 @@ namespace Aveneo.TestExcercise.Infrastructure.Data
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(TEntity[] entites)
+        public async Task DeleteAsync(IEnumerable<TEntity> entites)
         {
             _context.Set<TEntity>().RemoveRange(entites);
             await _context.SaveChangesAsync();

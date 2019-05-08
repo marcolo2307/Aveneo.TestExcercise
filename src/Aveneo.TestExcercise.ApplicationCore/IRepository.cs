@@ -15,12 +15,12 @@ namespace Aveneo.TestExcercise.ApplicationCore
         Task<ICollection<TEntity>> WhereAsync(Expression<Func<TEntity, bool>> predicate);
 
         Task CreateAsync(TEntity entity);
-        Task CreateAsync(TEntity[] entities);
+        Task CreateAsync(IEnumerable<TEntity> entities);
 
         Task UpdateAsync(TEntity entity);
-        Task UpdateAsync(TEntity[] entities);
+        Task UpdateAsync(IEnumerable<TEntity> entities);
 
         Task DeleteAsync(TEntity entity);
-        Task DeleteAsync(TEntity[] entities);
+        Task DeleteAsync(IEnumerable<TEntity> entities);
     }
 }
