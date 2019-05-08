@@ -1,0 +1,80 @@
+﻿@model DataObjectDetailsViewModel
+<div>
+    <h4>DataObject</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Price)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Price)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Latitude)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Latitude)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Longitude)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Longitude)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Features)
+        </dt>
+        <dd class="col-sm-10">
+            @if (Model.Features?.Count == 0)
+            {
+                <span class="text-warning">No features!</span>
+            }
+            else
+            {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                Id
+                            </th>
+                            <th>
+                                Icon
+                            </th>
+                            <th>
+                                Icon name
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var feature in Model.Features)
+                        {
+                            <tr>
+                                <td>
+                                    @feature.Id
+                                </td>
+                                <td>
+                                    @Html.Raw(feature.Icon)
+                                </td>
+                                <td>
+                                    @feature.IconName
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </dd>
+    </dl>
+</div>
