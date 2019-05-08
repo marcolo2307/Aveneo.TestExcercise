@@ -16,9 +16,14 @@ namespace Aveneo.TestExcercise.Infrastructure.Data
 
             var features = new List<Feature>
             {
-                new Feature { IconName = "fas-fa-mountain" },
-                new Feature { IconName = "fas-fa-camera" },
-                new Feature { IconName = "fas fa-fish" }
+                new Feature { IconName = "fas fa-spinner fa-spin" },
+                new Feature { IconName = "fas fa-circle-notch fa-spin" },
+                new Feature { IconName = "fas fa-sync-alt fa-spin" },
+                new Feature { IconName = "fas fa-cog fa-spin" },
+                new Feature { IconName = "fas fa-horse" },
+                new Feature { IconName = "fas fa-circle" },
+                new Feature { IconName = "fas fa-twitter" },
+                new Feature { IconName = "fas fa-ban" }
             };
 
             context.Set<Feature>().AddRange(features);
