@@ -20,6 +20,8 @@ namespace Aveneo.TestExcercise.Web
             services.ConfigureDatabase(_configuration);
             services.ConfigureMapping(_configuration);
             services.ConfigureRouting();
+
+            services.ConfigureServices();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

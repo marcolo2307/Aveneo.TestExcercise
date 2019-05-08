@@ -18,8 +18,4 @@
     <ProjectReference Include="..\Aveneo.TestExcercise.Infrastructure\Aveneo.TestExcercise.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
 </Project>
