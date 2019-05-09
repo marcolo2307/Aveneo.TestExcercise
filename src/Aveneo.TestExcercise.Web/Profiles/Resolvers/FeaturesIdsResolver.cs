@@ -23,7 +23,7 @@ namespace Aveneo.TestExcercise.Web.Profiles.Resolvers
             IEnumerable<int> destMember,
             ResolutionContext context)
         {
-            var featuresTask = _dataObjectService.GetFeatures(source);
+            var featuresTask = _dataObjectService.GetFeaturesAsync(source);
             featuresTask.Wait();
             var features = featuresTask.Result;
 

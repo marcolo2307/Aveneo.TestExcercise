@@ -86,7 +86,7 @@ namespace Aveneo.TestExcercise.Web.Controllers
                 if (selectedIds == null)
                     selectedIds = new int[] { };
                 var selectedFeatures = await _features.WhereAsync(e => selectedIds.Contains(e.Id));
-                await _dataObjectsService.SetFeatures(dataObject, selectedFeatures);
+                await _dataObjectsService.SetFeaturesAsync(dataObject, selectedFeatures);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -128,7 +128,7 @@ namespace Aveneo.TestExcercise.Web.Controllers
                 if (selectedIds == null)
                     selectedIds = new int[] { };
                 var selectedFeatures = await _features.WhereAsync(e => selectedIds.Contains(e.Id));
-                await _dataObjectsService.SetFeatures(dataObject, selectedFeatures);
+                await _dataObjectsService.SetFeaturesAsync(dataObject, selectedFeatures);
 
                 return RedirectToAction(nameof(Index));
             }

@@ -18,7 +18,7 @@ namespace Aveneo.TestExcercise.ApplicationCore.Services.Implementations
             _dataObjectFeatures = dataObjectFeatures;
         }
 
-        public async Task<ICollection<Feature>> GetFeatures(DataObject dataObject)
+        public async Task<ICollection<Feature>> GetFeaturesAsync(DataObject dataObject)
         {
             var dataObjectFeatures = await _dataObjectFeatures
                 .WhereAsync(dof => dof.DataObjectId == dataObject.Id);
@@ -30,7 +30,7 @@ namespace Aveneo.TestExcercise.ApplicationCore.Services.Implementations
             return features;
         }
 
-        public async Task SetFeatures(DataObject dataObject, IEnumerable<Feature> features)
+        public async Task SetFeaturesAsync(DataObject dataObject, IEnumerable<Feature> features)
         {
             var exitstingBindings = await _dataObjectFeatures
                 .WhereAsync(dof => dof.DataObjectId == dataObject.Id);
