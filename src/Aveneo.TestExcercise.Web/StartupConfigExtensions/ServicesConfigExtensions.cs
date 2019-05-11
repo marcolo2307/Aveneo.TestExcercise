@@ -13,6 +13,7 @@ namespace Aveneo.TestExcercise.Web.StartupConfigExtensions
             services.AddTransient<IIconDecoder, FontAwesomeDecoder>();
 
             services.AddTransient<IDataObjectService, DataObjectService>();
+            services.AddTransient<IDataObjectGalleryService, DataObjectGalleryService>();
         }
     }
 }

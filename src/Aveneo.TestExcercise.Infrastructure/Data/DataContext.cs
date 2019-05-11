@@ -1,7 +1,5 @@
 ﻿using Aveneo.TestExcercise.ApplicationCore.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Aveneo.TestExcercise.Infrastructure.Data
 {
@@ -10,6 +8,7 @@ namespace Aveneo.TestExcercise.Infrastructure.Data
         public DbSet<DataObject> DataObjects { get; set; }
         public DbSet<Feature> Features { get; set; }
         public DbSet<DataObjectFeature> DateObjectFeatures { get; set; }
+        public DbSet<DataObjectGallery> DataObjectGalleries { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) 
             : base(options)
