@@ -10,7 +10,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Aveneo.TestExcercise.Web.Controllers
-{
+{ 
     public class DataObjectsController : Controller
     {
         private IRepository<DataObject> _dataObjects { get; }
@@ -32,6 +32,15 @@ namespace Aveneo.TestExcercise.Web.Controllers
 
         // GET: DataObjects
         public async Task<IActionResult> Index()
+        {
+            var dataObjects = await _dataObjects.GetAllAsync();
+            var viewModels = _mapper.Map<ICollection<DataObjectDetailsViewModel>>(dataObjects);
+
+            return View(viewModels);
+        }
+
+        // GET: DataObjects
+        public async Task<IActionResult> Grid()
         {
             var dataObjects = await _dataObjects.GetAllAsync();
             var viewModels = _mapper.Map<ICollection<DataObjectDetailsViewModel>>(dataObjects);

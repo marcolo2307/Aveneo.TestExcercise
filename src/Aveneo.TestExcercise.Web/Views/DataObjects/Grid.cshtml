@@ -1,0 +1,36 @@
+﻿@model IEnumerable<DataObjectDetailsViewModel>
+@{
+    ViewData["Title"] = "Grid";
+}
+
+<h1>Grid</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<p>
+    <a asp-action="Index">List</a>
+</p>
+
+@(Html
+    .Grid(Model)
+    .Build(c =>
+    {
+        c.Add(m => m.Name).Titled("Name");
+        c.Add(m => m.Price).Titled("Price").Formatted("{0:c}");
+        c.Add(m => m.Description).Titled("Description");
+        c.Add(m => m.Features).Titled("Features")
+            .RenderedAs(m => Html.Raw(String.Join("", m.Features.Select(f => f.Icon))));
+    })
+    .Empty("No data objects!")
+    .Filterable()
+    .Sortable()
+    .Pageable(b => b.RowsPerPage = 5)
+)
+
+<script src="~/Scripts/MvcGrid/mvc-grid.js"></script>
+<script>
+        [].forEach.call(document.getElementsByClassName('mvc-grid'), function (element) {
+            new MvcGrid(element);
+        });
+</script>
