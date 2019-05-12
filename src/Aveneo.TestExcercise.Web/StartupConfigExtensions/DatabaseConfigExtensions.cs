@@ -19,6 +19,7 @@ namespace Aveneo.TestExcercise.Web.StartupConfigExtensions
             services.AddTransient<IRepository<DataObject>, EfcRepository<DataObject, DataContext>>();
             services.AddTransient<IRepository<Feature>, EfcRepository<Feature, DataContext>>();
             services.AddTransient<IRepository<DataObjectFeature>, EfcRepository<DataObjectFeature, DataContext>>();
+            services.AddTransient<IRepository<DataObjectGallery>, EfcRepository<DataObjectGallery, DataContext>>();
         }
     }
 }

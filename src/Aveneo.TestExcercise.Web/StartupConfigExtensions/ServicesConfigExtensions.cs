@@ -1,5 +1,6 @@
 ﻿using Aveneo.TestExcercise.ApplicationCore.Services;
 using Aveneo.TestExcercise.ApplicationCore.Services.Implementations;
+using Aveneo.TestExcercise.Infrastructure.Services.Implementations;
 using Aveneo.TestExcercise.Web.Services;
 using Aveneo.TestExcercise.Web.Services.Implementations;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,8 @@ namespace Aveneo.TestExcercise.Web.StartupConfigExtensions
 
             services.AddTransient<IDataObjectService, DataObjectService>();
             services.AddTransient<IDataObjectGalleryService, DataObjectGalleryService>();
+
+            services.AddTransient<IPhotoService, HardDrivePhotoService>();
         }
     }
 }

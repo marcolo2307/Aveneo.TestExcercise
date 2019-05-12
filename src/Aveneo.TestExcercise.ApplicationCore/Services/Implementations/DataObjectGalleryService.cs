@@ -32,7 +32,8 @@ namespace Aveneo.TestExcercise.ApplicationCore.Services.Implementations
             };
 
             var existingGalleries = await GetAllAsync(dataObject);
-            gallery.Sequence = existingGalleries.LastOrDefault()?.Sequence ?? 0;
+            existingGalleries = existingGalleries.OrderBy(e => e.Sequence).ToList();
+            gallery.Sequence = existingGalleries.LastOrDefault()?.Sequence + 1 ?? 0;
 
             await _galleries.CreateAsync(gallery);
             return gallery;

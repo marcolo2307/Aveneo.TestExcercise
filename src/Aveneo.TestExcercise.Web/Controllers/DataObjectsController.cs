@@ -8,6 +8,9 @@ using System.Collections.Generic;
 using Aveneo.TestExcercise.ApplicationCore.Services;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using System;
 
 namespace Aveneo.TestExcercise.Web.Controllers
 { 
@@ -16,17 +19,23 @@ namespace Aveneo.TestExcercise.Web.Controllers
         private IRepository<DataObject> _dataObjects { get; }
         private IRepository<Feature> _features { get; }
         private IDataObjectService _dataObjectsService { get; }
+        private IDataObjectGalleryService _dataObjectGalleryService { get; }
+        private IPhotoService _photoService { get; }
         private IMapper _mapper { get; }
 
         public DataObjectsController(
             IRepository<DataObject> dataObjects,
             IRepository<Feature> features,
             IDataObjectService dataObjectsService,
+            IDataObjectGalleryService dataObjectGalleryService,
+            IPhotoService photoService,
             IMapper mapper)
         {
             _dataObjects = dataObjects;
             _features = features;
             _dataObjectsService = dataObjectsService;
+            _dataObjectGalleryService = dataObjectGalleryService;
+            _photoService = photoService;
             _mapper = mapper;
         }
 
@@ -172,6 +181,33 @@ namespace Aveneo.TestExcercise.Web.Controllers
 
             await _dataObjects.DeleteAsync(dataObject);
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public IActionResult EditPhotos(int id)
+        {
+            return View();
+        }
+
+        [HttpPost, ActionName("UploadPhotos")]
+        public async Task<IActionResult> UploadPhotos(int id, IFormFileCollection photos)
+        {
+            var dataObject = await _dataObjects.FindByIdAsync(id);
+
+            if (dataObject == null)
+                return NotFound();
+
+            foreach (var photo in photos)
+            {
+                var stream = new MemoryStream();
+                await photo.CopyToAsync(stream);
+                var filename = Guid.NewGuid();
+                await _photoService.CreateAsync(filename.ToString(), stream);
+
+                await _dataObjectGalleryService.AddAsync(dataObject, filename);
+            }
+
+            return NoContent();
         }
     }
 }

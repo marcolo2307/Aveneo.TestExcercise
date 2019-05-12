@@ -43,7 +43,7 @@
 
                 </select>
             </div>
-            <input type="hidden" asp-for="Id" />
+            <input id="object_id" type="hidden" asp-for="Id" />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
@@ -52,6 +52,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <p><a asp-action="EditPhotos" asp-route-id="@Model.Id">Edit photos</a></p>
+    <p><a asp-action="Index">Back to List</a></p>
 </div>
 
