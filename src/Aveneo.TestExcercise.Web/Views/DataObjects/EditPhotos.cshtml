@@ -1,10 +1,11 @@
-﻿
-@{ 
+﻿@{ 
     ViewData["Title"] = "Edit photos";
 }
 
 <h1>Edit object photos</h1>
 <h2 class="text-warning">All changes will be applied immediately!</h2>
+
+<input id="object_id" type="hidden" value="@ViewData["ObjectId"]"/>
 
 <partial name="UploadPhotosPartial" />
 

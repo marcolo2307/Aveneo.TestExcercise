@@ -69,6 +69,19 @@ namespace Aveneo.TestExcercise.Web.Controllers
 
             var viewModel = _mapper.Map<DataObjectDetailsViewModel>(dataObject);
 
+            var galleries = (await _dataObjectGalleryService.GetAllAsync(dataObject)).OrderBy(e => e.Sequence);
+            var photos = new List<string>();
+            foreach (var g in galleries)
+            {
+                if (g.Sequence == 0)
+                    continue;
+                var stream = await _photoService.GetAsync(g.FileName.ToString());
+                stream.Position = 0;
+                using (var streamReader = new StreamReader(stream))
+                    photos.Add(await streamReader.ReadToEndAsync());
+            };
+            ViewData["Photos"] = photos;
+
             return View(viewModel);
         }
 
@@ -166,6 +179,19 @@ namespace Aveneo.TestExcercise.Web.Controllers
 
             var viewModel = _mapper.Map<DataObjectDetailsViewModel>(dataObject);
 
+            var galleries = (await _dataObjectGalleryService.GetAllAsync(dataObject)).OrderBy(e => e.Sequence);
+            var photos = new List<string>();
+            foreach (var g in galleries)
+            {
+                if (g.Sequence == 0)
+                    continue;
+                var stream = await _photoService.GetAsync(g.FileName.ToString());
+                stream.Position = 0;
+                using (var streamReader = new StreamReader(stream))
+                    photos.Add(await streamReader.ReadToEndAsync());
+            };
+            ViewData["Photos"] = photos;
+
             return View(viewModel);
         }
 
@@ -186,10 +212,11 @@ namespace Aveneo.TestExcercise.Web.Controllers
         [HttpGet]
         public IActionResult EditPhotos(int id)
         {
+            ViewData["ObjectId"] = id;
             return View();
         }
 
-        [HttpPost, ActionName("UploadPhotos")]
+        [HttpPost]
         public async Task<IActionResult> UploadPhotos(int id, IFormFileCollection photos)
         {
             var dataObject = await _dataObjects.FindByIdAsync(id);
@@ -201,6 +228,12 @@ namespace Aveneo.TestExcercise.Web.Controllers
             {
                 var stream = new MemoryStream();
                 await photo.CopyToAsync(stream);
+
+                var base64 = Convert.ToBase64String(stream.ToArray());
+                stream.SetLength(0);
+                var writer = new StreamWriter(stream);
+                writer.Write(base64);
+
                 var filename = Guid.NewGuid();
                 await _photoService.CreateAsync(filename.ToString(), stream);
 

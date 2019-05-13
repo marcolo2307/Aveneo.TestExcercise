@@ -76,5 +76,37 @@
                 </table>
             }
         </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(m => m.DefaultPhoto)
+        </dt>
+        <dd class="col-sm-10">
+            @if (string.IsNullOrEmpty(Model.DefaultPhoto))
+            {
+                <p class="text-warning">No photo!</p>
+            }
+            else
+            {
+                <img src="data:image/gif;base64,@Model.DefaultPhoto" height="400" />
+            }
+        </dd>
+        <dt class="col-sm-2">
+            Other photos
+        </dt>
+        <dd class="col-sm-10">
+            @{
+                var photos = ViewData["Photos"] as ICollection<string>;
+                if (photos == null || photos.Count == 0)
+                {
+                    <p class="text-warning">No photos!</p>
+                }
+                else
+                {
+                    for (var i = 0; i < photos.Count; i++)
+                    {
+                        <img src="data:image/gif;base64,@photos.ElementAt(i)" height="200" />
+                    }
+                }
+            }
+        </dd>
     </dl>
 </div>

@@ -19,6 +19,7 @@ namespace Aveneo.TestExcercise.Web.Profiles
             CreateMap<DataObject, DataObjectDetailsViewModel>()
                 .ForMember(e => e.Latitude, o => o.MapFrom(s => s.Location.Latitude))
                 .ForMember(e => e.Longitude, o => o.MapFrom(s => s.Location.Longitude))
+                .ForMember(e => e.DefaultPhoto, o => o.MapFrom<DefaultPhotoResolver>())
                 .ForMember(e => e.Features, o => o.MapFrom<FeaturesResolver>());
 
             CreateMap<DataObjectDetailsViewModel, DataObject>()

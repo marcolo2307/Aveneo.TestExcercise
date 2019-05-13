@@ -21,6 +21,9 @@
         c.Add(m => m.Description).Titled("Description");
         c.Add(m => m.Features).Titled("Features")
             .RenderedAs(m => Html.Raw(String.Join("", m.Features.Select(f => f.Icon))));
+        c.Add(m => m.DefaultPhoto).Titled("Image")
+            .RenderedAs(m => string.IsNullOrEmpty(m.DefaultPhoto) ? Html.Raw("No photos") :
+            Html.Raw($"<img src=\"data:image/gif;base64,{m.DefaultPhoto}\" height=\"100px\"/>"));
     })
     .Empty("No data objects!")
     .Filterable()
@@ -34,3 +37,9 @@
             new MvcGrid(element);
         });
 </script>
+
+
+@foreach (var x in Model)
+{
+    <p>@x.DefaultPhoto</p>
+}
