@@ -8,12 +8,11 @@ using System.Collections.Generic;
 using Aveneo.TestExcercise.ApplicationCore.Services;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Http;
 using System.IO;
 using System;
 
 namespace Aveneo.TestExcercise.Web.Controllers
-{ 
+{
     public class DataObjectsController : Controller
     {
         private IRepository<DataObject> _dataObjects { get; }
@@ -214,33 +213,6 @@ namespace Aveneo.TestExcercise.Web.Controllers
         {
             ViewData["ObjectId"] = id;
             return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> UploadPhotos(int id, IFormFileCollection photos)
-        {
-            var dataObject = await _dataObjects.FindByIdAsync(id);
-
-            if (dataObject == null)
-                return NotFound();
-
-            foreach (var photo in photos)
-            {
-                var stream = new MemoryStream();
-                await photo.CopyToAsync(stream);
-
-                var base64 = Convert.ToBase64String(stream.ToArray());
-                stream.SetLength(0);
-                var writer = new StreamWriter(stream);
-                writer.Write(base64);
-
-                var filename = Guid.NewGuid();
-                await _photoService.CreateAsync(filename.ToString(), stream);
-
-                await _dataObjectGalleryService.AddAsync(dataObject, filename);
-            }
-
-            return NoContent();
         }
     }
 }

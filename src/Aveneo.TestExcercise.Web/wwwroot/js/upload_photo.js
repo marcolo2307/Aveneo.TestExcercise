@@ -8,7 +8,7 @@
             form.append("photos", upload.files[i]);
 
         $.ajax({
-            url: "/DataObjects/UploadPhotos/" + objectId,
+            url: "/api/photos/" + objectId,
             data: form,
             processData: false,
             contentType: false,
