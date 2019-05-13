@@ -17,15 +17,18 @@ namespace Aveneo.TestExcercise.Web.Controllers
     public class PhotosController : ControllerBase
     {
         private IRepository<DataObject> _dataObjects { get; }
+        private IRepository<DataObjectGallery> _galleries { get; }
         private IDataObjectGalleryService _dataObjectGalleryService { get; }
         private IPhotoService _photoService { get; }
 
         public PhotosController(
             IRepository<DataObject> dataObjects,
+            IRepository<DataObjectGallery> galleries,
             IDataObjectGalleryService dataObjectGalleryService,
             IPhotoService photoService)
         {
             _dataObjects = dataObjects;
+            _galleries = galleries;
             _dataObjectGalleryService = dataObjectGalleryService;
             _photoService = photoService;
         }
@@ -61,14 +64,47 @@ namespace Aveneo.TestExcercise.Web.Controllers
         }
 
         [HttpPut("{objectId}")]
-        public async Task<IActionResult> UpdatePhotos(int objectId)
+        public async Task<IActionResult> UpdatePhotos(int objectId, [FromBody] UpdatePhotosViewModel viewModel)
         {
             var dataObject = await _dataObjects.FindByIdAsync(objectId);
 
             if (dataObject == null)
                 return NotFound();
 
+            if (viewModel.Photos.Count != viewModel.Photos.Select(p => p.Sequence).Distinct().Count())
+                return BadRequest();
 
+            if (viewModel.Photos.Count == 0)
+            {
+                var existingPhotos = await _dataObjectGalleryService.GetAllAsync(dataObject);
+                foreach (var photo in existingPhotos)
+                    await _photoService.DeleteAsync(photo.FileName.ToString());
+                await _galleries.DeleteAsync(existingPhotos);
+                return NoContent();
+            }
+
+            var newPhotos = new List<DataObjectGallery>();
+
+            foreach (var photo in viewModel.Photos.OrderBy(e => e.Sequence))
+            {
+                var gallery = await _galleries.FindByIdAsync(photo.Id);
+                if (gallery == null)
+                    return BadRequest();
+                gallery.Sequence = photo.Sequence;
+                newPhotos.Add(gallery);
+            }
+
+            if (newPhotos.FirstOrDefault().Sequence != 0)
+                return BadRequest();
+
+            await _galleries.UpdateAsync(newPhotos);
+
+            var allPhotos = await _dataObjectGalleryService.GetAllAsync(dataObject);
+            var oldPhotos = allPhotos.Except(newPhotos);
+
+            foreach (var photo in oldPhotos)
+                await _photoService.DeleteAsync(photo.FileName.ToString());
+            await _galleries.DeleteAsync(oldPhotos);
 
             return NoContent();
         }

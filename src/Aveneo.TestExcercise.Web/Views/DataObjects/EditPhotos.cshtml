@@ -3,11 +3,8 @@
 }
 
 <h1>Edit object photos</h1>
-<h2 class="text-warning">All changes will be applied immediately!</h2>
 
 <input id="object_id" type="hidden" value="@ViewData["ObjectId"]"/>
-
-<partial name="UploadPhotosPartial" />
 
 <hr/>
 
@@ -17,9 +14,17 @@
 
 <hr/>
 
-<p>Drag and drop photos to set sequence!</p>
+<p>Drag and drop photos to set the sequence!</p>
 
 <input id="reset-button" type="button" value="Reset" class="btn btn-danger"/>
 <input id="save-button" type="button" value="Save" class="btn btn-primary"/>
 
-<script src="~/js/edit-photos.js"></script>
+<hr/>
+
+<div class="form-group">
+    <h3 class="text-warning">Uploads will be applied immediately!</h3>
+
+    <input id="upload_photos" type="file" multiple />
+</div>
+
+<script src="~/js/photos_scripts.js"></script>
