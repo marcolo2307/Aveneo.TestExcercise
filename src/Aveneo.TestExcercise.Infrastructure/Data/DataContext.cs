@@ -9,6 +9,7 @@ namespace Aveneo.TestExcercise.Infrastructure.Data
         public DbSet<Feature> Features { get; set; }
         public DbSet<DataObjectFeature> DateObjectFeatures { get; set; }
         public DbSet<DataObjectGallery> DataObjectGalleries { get; set; }
+        public DbSet<Configuration> Configurations { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) 
             : base(options)

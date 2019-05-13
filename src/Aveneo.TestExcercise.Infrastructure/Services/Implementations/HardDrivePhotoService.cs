@@ -1,5 +1,8 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using Aveneo.TestExcercise.ApplicationCore;
+using Aveneo.TestExcercise.ApplicationCore.Entities;
 using Aveneo.TestExcercise.ApplicationCore.Services;
 
 namespace Aveneo.TestExcercise.Infrastructure.Services.Implementations
@@ -8,10 +11,20 @@ namespace Aveneo.TestExcercise.Infrastructure.Services.Implementations
     {
         private string Path { get; }
 
-        public HardDrivePhotoService()
+        public HardDrivePhotoService(IRepository<Configuration> configurations)
         {
-            Path = "C:\\TempPhotos\\";
-            Directory.CreateDirectory("C:\\TempPhotos\\");
+            var findConfigurationTask = configurations.WhereAsync(e => e.Key == ConfigurationKeys.FileLocation);
+            findConfigurationTask.Wait();
+
+            var config = findConfigurationTask.Result.FirstOrDefault();
+            if (config == null || string.IsNullOrEmpty(config.Value))
+                Path = "C:\\TempPhotos\\";
+            else
+                Path = config.Value;
+            Directory.CreateDirectory(Path);
+
+            if (Path.Last() != '\\')
+                Path += '\\';
         }
 
         public async Task CreateAsync(string filename, Stream data)
