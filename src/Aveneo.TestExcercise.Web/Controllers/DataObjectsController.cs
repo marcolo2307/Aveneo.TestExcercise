@@ -1,48 +1,30 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Aveneo.TestExcercise.ApplicationCore.Entities;
-using Aveneo.TestExcercise.ApplicationCore;
-using AutoMapper;
 using Aveneo.TestExcercise.Web.ViewModels;
-using System.Collections.Generic;
 using Aveneo.TestExcercise.ApplicationCore.Services;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System.IO;
-using System;
+using Aveneo.TestExcercise.Web.Services;
 
 namespace Aveneo.TestExcercise.Web.Controllers
 {
     public class DataObjectsController : Controller
     {
-        private IRepository<DataObject> _dataObjects { get; }
-        private IRepository<Feature> _features { get; }
-        private IDataObjectService _dataObjectsService { get; }
-        private IDataObjectGalleryService _dataObjectGalleryService { get; }
-        private IPhotoService _photoService { get; }
-        private IMapper _mapper { get; }
+        private _IDataObjectService _dataObjectService { get; }
+        private IDataObjectViewModelService _dataObjectViewModelService { get; }
 
         public DataObjectsController(
-            IRepository<DataObject> dataObjects,
-            IRepository<Feature> features,
-            IDataObjectService dataObjectsService,
-            IDataObjectGalleryService dataObjectGalleryService,
-            IPhotoService photoService,
-            IMapper mapper)
+            _IDataObjectService dataObjectsService,
+            IDataObjectViewModelService dataObjectsViewModelService)
         {
-            _dataObjects = dataObjects;
-            _features = features;
-            _dataObjectsService = dataObjectsService;
-            _dataObjectGalleryService = dataObjectGalleryService;
-            _photoService = photoService;
-            _mapper = mapper;
+            _dataObjectService = dataObjectsService;
+            _dataObjectViewModelService = dataObjectsViewModelService;
         }
 
         // GET: DataObjects
         public async Task<IActionResult> Index()
         {
-            var dataObjects = await _dataObjects.GetAllAsync();
-            var viewModels = _mapper.Map<ICollection<DataObjectDetailsViewModel>>(dataObjects);
+            var dataObjects = await _dataObjectService.DataObjects.GetAllAsync();
+            var viewModels = await _dataObjectViewModelService.GetDetailsAsync(dataObjects);
 
             return View(viewModels);
         }
@@ -50,8 +32,8 @@ namespace Aveneo.TestExcercise.Web.Controllers
         // GET: DataObjects
         public async Task<IActionResult> Grid()
         {
-            var dataObjects = await _dataObjects.GetAllAsync();
-            var viewModels = _mapper.Map<ICollection<DataObjectDetailsViewModel>>(dataObjects);
+            var dataObjects = await _dataObjectService.DataObjects.GetAllAsync();
+            var viewModels = await _dataObjectViewModelService.GetDetailsAsync(dataObjects);
 
             return View(viewModels);
         }
@@ -62,24 +44,23 @@ namespace Aveneo.TestExcercise.Web.Controllers
             if (id == null)
                 return NotFound();
 
-            var dataObject = await _dataObjects.FindByIdAsync(id.Value);
+            var dataObject = await _dataObjectService.DataObjects.FindByIdAsync(id.Value);
             if (dataObject == null)
                 return NotFound();
 
-            var viewModel = _mapper.Map<DataObjectDetailsViewModel>(dataObject);
+            var viewModel = await _dataObjectViewModelService.GetDetailsAsync(dataObject);
 
-            var galleries = (await _dataObjectGalleryService.GetAllAsync(dataObject)).OrderBy(e => e.Sequence);
-            var photos = new List<string>();
-            foreach (var g in galleries)
+            var photos = await _dataObjectService.GetPhotosAsync(dataObject);
+            if (photos.Count > 0)
+                photos = photos.Skip(1).ToList();
+            var photosViewModels = photos.ToList().ConvertAll<PhotoViewModel>(p => new PhotoViewModel
             {
-                if (g.Sequence == 0)
-                    continue;
-                var stream = await _photoService.GetAsync(g.FileName.ToString());
-                stream.Position = 0;
-                using (var streamReader = new StreamReader(stream))
-                    photos.Add(await streamReader.ReadToEndAsync());
-            };
-            ViewData["Photos"] = photos;
+                Id = p.Id,
+                Sequence = p.Sequence,
+                Photo = p.Source
+            });
+
+            ViewData["Photos"] = photosViewModels;
 
             return View(viewModel);
         }
@@ -87,16 +68,7 @@ namespace Aveneo.TestExcercise.Web.Controllers
         // GET: DataObjects/Create
         public async Task<IActionResult> Create()
         {
-            var viewModel = new DataObjectEditViewModel();
-
-            var features = await _features.GetAllAsync();
-
-            viewModel.Features = features.ToList().ConvertAll<SelectListItem>(f => new SelectListItem
-            {
-                Value = f.Id.ToString(),
-                Text = f.IconName
-            });
-            viewModel.SelectedFeatures = new int[] { };
+            var viewModel = await _dataObjectViewModelService.GetEditAsync();
 
             return View(viewModel);
         }
@@ -108,15 +80,7 @@ namespace Aveneo.TestExcercise.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var dataObject = _mapper.Map<DataObject>(viewModel);
-
-                await _dataObjects.CreateAsync(dataObject);
-
-                var selectedIds = viewModel.SelectedFeatures?.ToArray();
-                if (selectedIds == null)
-                    selectedIds = new int[] { };
-                var selectedFeatures = await _features.WhereAsync(e => selectedIds.Contains(e.Id));
-                await _dataObjectsService.SetFeaturesAsync(dataObject, selectedFeatures);
+                await _dataObjectViewModelService.SaveEditAsync(viewModel);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -129,11 +93,11 @@ namespace Aveneo.TestExcercise.Web.Controllers
             if (id == null)
                 return NotFound();
 
-            var dataObject = await _dataObjects.FindByIdAsync(id.Value);
+            var dataObject = await _dataObjectService.DataObjects.FindByIdAsync(id.Value);
             if (dataObject == null)
                 return NotFound();
 
-            var viewModel = _mapper.Map<DataObjectEditViewModel>(dataObject);
+            var viewModel = await _dataObjectViewModelService.GetEditAsync(dataObject);
 
             return View(viewModel);
         }
@@ -148,17 +112,7 @@ namespace Aveneo.TestExcercise.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                var dataObject = await _dataObjects.FindByIdAsync(id);
-
-                _mapper.Map(viewModel, dataObject);
-
-                await _dataObjects.UpdateAsync(dataObject);
-
-                var selectedIds = viewModel.SelectedFeatures?.ToArray();
-                if (selectedIds == null)
-                    selectedIds = new int[] { };
-                var selectedFeatures = await _features.WhereAsync(e => selectedIds.Contains(e.Id));
-                await _dataObjectsService.SetFeaturesAsync(dataObject, selectedFeatures);
+                await _dataObjectViewModelService.SaveEditAsync(viewModel);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -172,24 +126,23 @@ namespace Aveneo.TestExcercise.Web.Controllers
             if (id == null)
                 return NotFound();
 
-            var dataObject = await _dataObjects.FindByIdAsync(id.Value);
+            var dataObject = await _dataObjectService.DataObjects.FindByIdAsync(id.Value);
             if (dataObject == null)
                 return NotFound();
 
-            var viewModel = _mapper.Map<DataObjectDetailsViewModel>(dataObject);
+            var viewModel = await _dataObjectViewModelService.GetDetailsAsync(dataObject);
 
-            var galleries = (await _dataObjectGalleryService.GetAllAsync(dataObject)).OrderBy(e => e.Sequence);
-            var photos = new List<string>();
-            foreach (var g in galleries)
+            var photos = await _dataObjectService.GetPhotosAsync(dataObject);
+            if (photos.Count > 0)
+                photos = photos.Skip(1).ToList();
+            var photosViewModels = photos.ToList().ConvertAll<PhotoViewModel>(p => new PhotoViewModel
             {
-                if (g.Sequence == 0)
-                    continue;
-                var stream = await _photoService.GetAsync(g.FileName.ToString());
-                stream.Position = 0;
-                using (var streamReader = new StreamReader(stream))
-                    photos.Add(await streamReader.ReadToEndAsync());
-            };
-            ViewData["Photos"] = photos;
+                Id = p.Id,
+                Sequence = p.Sequence,
+                Photo = p.Source
+            });
+
+            ViewData["Photos"] = photosViewModels;
 
             return View(viewModel);
         }
@@ -199,12 +152,13 @@ namespace Aveneo.TestExcercise.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var dataObject = await _dataObjects.FindByIdAsync(id);
+            var dataObject = await _dataObjectService.DataObjects.FindByIdAsync(id);
 
             if (dataObject == null)
                 return NotFound();
 
-            await _dataObjects.DeleteAsync(dataObject);
+            await _dataObjectService.DeleteAsync(dataObject);
+
             return RedirectToAction(nameof(Index));
         }
 

@@ -94,7 +94,7 @@
         </dt>
         <dd class="col-sm-10">
             @{
-                var photos = ViewData["Photos"] as ICollection<string>;
+                var photos = ViewData["Photos"] as ICollection<PhotoViewModel>;
                 if (photos == null || photos.Count == 0)
                 {
                     <p class="text-warning">No photos!</p>
@@ -103,7 +103,7 @@
                 {
                     for (var i = 0; i < photos.Count; i++)
                     {
-                        <img src="data:image/gif;base64,@photos.ElementAt(i)" height="200" />
+                        <img src="data:image/gif;base64,@photos.ElementAt(i).Photo" height="200" />
                     }
                 }
             }

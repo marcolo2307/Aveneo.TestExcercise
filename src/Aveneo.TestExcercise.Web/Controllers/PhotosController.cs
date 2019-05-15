@@ -1,10 +1,8 @@
-﻿using Aveneo.TestExcercise.ApplicationCore;
-using Aveneo.TestExcercise.ApplicationCore.Entities;
+﻿using Aveneo.TestExcercise.ApplicationCore.Entities;
 using Aveneo.TestExcercise.ApplicationCore.Services;
 using Aveneo.TestExcercise.Web.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,57 +14,39 @@ namespace Aveneo.TestExcercise.Web.Controllers
     [ApiController]
     public class PhotosController : ControllerBase
     {
-        private IRepository<DataObject> _dataObjects { get; }
-        private IRepository<DataObjectGallery> _galleries { get; }
-        private IDataObjectGalleryService _dataObjectGalleryService { get; }
-        private IPhotoService _photoService { get; }
+
+        private _IDataObjectService _dataObjectService { get; }
 
         public PhotosController(
-            IRepository<DataObject> dataObjects,
-            IRepository<DataObjectGallery> galleries,
-            IDataObjectGalleryService dataObjectGalleryService,
-            IPhotoService photoService)
+            _IDataObjectService dataObjectService)
         {
-            _dataObjects = dataObjects;
-            _galleries = galleries;
-            _dataObjectGalleryService = dataObjectGalleryService;
-            _photoService = photoService;
+            _dataObjectService = dataObjectService;
         }
 
         [HttpGet("{objectId}")]
         public async Task<ActionResult<ICollection<PhotoViewModel>>> GetAllPhotos(int objectId)
         {
-            var dataObject = await _dataObjects.FindByIdAsync(objectId);
+            var dataObject = await _dataObjectService.DataObjects.FindByIdAsync(objectId);
 
             if (dataObject == null)
                 return NotFound();
 
-            var galleries = (await _dataObjectGalleryService.GetAllAsync(dataObject))
-                .OrderBy(e => e.Sequence).ToList();
+            var photos = await _dataObjectService.GetPhotosAsync(dataObject);
 
-            var photos = new List<PhotoViewModel>();
-            foreach (var g in galleries)
+            var photosViewModels = photos.ToList().ConvertAll<PhotoViewModel>(p => new PhotoViewModel
             {
-                var stream = await _photoService.GetAsync(g.FileName.ToString());
-                var reader = new StreamReader(stream);
-                    
-                photos.Add(new PhotoViewModel
-                {
-                    Id = g.Id,
-                    Sequence = g.Sequence,
-                    Photo = await reader.ReadToEndAsync()
-                });
+                Id = p.Id,
+                Sequence = p.Sequence,
+                Photo = p.Source
+            });
 
-                reader.Dispose();
-            }
-
-            return Ok(photos);
+            return Ok(photosViewModels);
         }
 
         [HttpPut("{objectId}")]
         public async Task<IActionResult> UpdatePhotos(int objectId, [FromBody] UpdatePhotosViewModel viewModel)
         {
-            var dataObject = await _dataObjects.FindByIdAsync(objectId);
+            var dataObject = await _dataObjectService.DataObjects.FindByIdAsync(objectId);
 
             if (dataObject == null)
                 return NotFound();
@@ -74,37 +54,14 @@ namespace Aveneo.TestExcercise.Web.Controllers
             if (viewModel.Photos.Count != viewModel.Photos.Select(p => p.Sequence).Distinct().Count())
                 return BadRequest();
 
-            if (viewModel.Photos.Count == 0)
+            var photos = viewModel.Photos.ToList().ConvertAll<Photo>(p => new Photo
             {
-                var existingPhotos = await _dataObjectGalleryService.GetAllAsync(dataObject);
-                foreach (var photo in existingPhotos)
-                    await _photoService.DeleteAsync(photo.FileName.ToString());
-                await _galleries.DeleteAsync(existingPhotos);
-                return NoContent();
-            }
+                Id = p.Id,
+                Sequence = p.Sequence,
+                Source = p.Photo
+            });
 
-            var newPhotos = new List<DataObjectGallery>();
-
-            foreach (var photo in viewModel.Photos.OrderBy(e => e.Sequence))
-            {
-                var gallery = await _galleries.FindByIdAsync(photo.Id);
-                if (gallery == null)
-                    return BadRequest();
-                gallery.Sequence = photo.Sequence;
-                newPhotos.Add(gallery);
-            }
-
-            if (newPhotos.FirstOrDefault().Sequence != 0)
-                return BadRequest();
-
-            await _galleries.UpdateAsync(newPhotos);
-
-            var allPhotos = await _dataObjectGalleryService.GetAllAsync(dataObject);
-            var oldPhotos = allPhotos.Except(newPhotos);
-
-            foreach (var photo in oldPhotos)
-                await _photoService.DeleteAsync(photo.FileName.ToString());
-            await _galleries.DeleteAsync(oldPhotos);
+            await _dataObjectService.UpdateExistingPhotos(dataObject, photos);
 
             return NoContent();
         }
@@ -112,25 +69,15 @@ namespace Aveneo.TestExcercise.Web.Controllers
         [HttpPost("{objectId}")]
         public async Task<IActionResult> UploadPhotos(int objectId, IFormFileCollection photos)
         {
-            var dataObject = await _dataObjects.FindByIdAsync(objectId);
+            var dataObject = await _dataObjectService.DataObjects.FindByIdAsync(objectId);
 
             if (dataObject == null)
                 return NotFound();
 
             foreach (var photo in photos)
             {
-                var stream = new MemoryStream();
-                await photo.CopyToAsync(stream);
-
-                var base64 = Convert.ToBase64String(stream.ToArray());
-                stream.SetLength(0);
-                var writer = new StreamWriter(stream);
-                writer.Write(base64);
-
-                var filename = Guid.NewGuid();
-                await _photoService.CreateAsync(filename.ToString(), stream);
-
-                await _dataObjectGalleryService.AddAsync(dataObject, filename);
+                var stream = photo.OpenReadStream();
+                await _dataObjectService.AddNewPhotoAsync(dataObject, stream);
             }
 
             return NoContent();

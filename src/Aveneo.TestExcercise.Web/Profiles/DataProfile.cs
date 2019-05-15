@@ -15,32 +15,6 @@ namespace Aveneo.TestExcercise.Web.Profiles
 
             CreateMap<Feature, FeatureEditViewModel>()
                 .ReverseMap();
-
-            CreateMap<DataObject, DataObjectDetailsViewModel>()
-                .ForMember(e => e.Latitude, o => o.MapFrom(s => s.Location.Latitude))
-                .ForMember(e => e.Longitude, o => o.MapFrom(s => s.Location.Longitude))
-                .ForMember(e => e.DefaultPhoto, o => o.MapFrom<DefaultPhotoResolver>())
-                .ForMember(e => e.Features, o => o.MapFrom<FeaturesResolver>());
-
-            CreateMap<DataObjectDetailsViewModel, DataObject>()
-                .ForMember(e => e.Location, o => o.MapFrom(s => new Geography
-                {
-                    Latitude = s.Latitude,
-                    Longitude = s.Longitude
-                }));
-
-            CreateMap<DataObject, DataObjectEditViewModel>()
-                .ForMember(e => e.Latitude, o => o.MapFrom(s => s.Location.Latitude))
-                .ForMember(e => e.Longitude, o => o.MapFrom(s => s.Location.Longitude))
-                .ForMember(e => e.Features, o => o.MapFrom<SelectFeaturesResolver>())
-                .ForMember(e => e.SelectedFeatures, o => o.MapFrom<FeaturesIdsResolver>());
-
-            CreateMap<DataObjectEditViewModel, DataObject>()
-                .ForMember(e => e.Location, o => o.MapFrom(s => new Geography
-                {
-                    Latitude = s.Latitude,
-                    Longitude = s.Longitude
-                }));
         }
     }
 }
