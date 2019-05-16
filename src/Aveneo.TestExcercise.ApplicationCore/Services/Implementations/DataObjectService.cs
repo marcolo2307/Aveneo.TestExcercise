@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Aveneo.TestExcercise.ApplicationCore.Entities;
 
 namespace Aveneo.TestExcercise.ApplicationCore.Services.Implementations
 {
-    public class _DataObjectService : _IDataObjectService
+    public class DataObjectService : IDataObjectService
     {
         public IRepository<DataObject> DataObjects { get; }
         private IRepository<Feature> _features { get; }
@@ -16,7 +15,7 @@ namespace Aveneo.TestExcercise.ApplicationCore.Services.Implementations
         private IRepository<DataObjectGallery> _dataObjectGalleries { get; }
         private IPhotoService _photoService { get; }
 
-        public _DataObjectService(
+        public DataObjectService(
             IRepository<DataObject> dataObjects,
             IRepository<Feature> features,
             IRepository<DataObjectFeature> dataObjectFeatures,

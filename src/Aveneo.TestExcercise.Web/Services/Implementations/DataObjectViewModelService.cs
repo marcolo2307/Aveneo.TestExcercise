@@ -13,12 +13,12 @@ namespace Aveneo.TestExcercise.Web.Services.Implementations
     public class DataObjectViewModelService : IDataObjectViewModelService
     {
         private IMapper _mapper { get; }
-        private _IDataObjectService _dataObjectService { get; }
+        private IDataObjectService _dataObjectService { get; }
         private IRepository<Feature> _features { get; }
 
         public DataObjectViewModelService(
             IMapper mapper,
-            _IDataObjectService dataObjectService,
+            IDataObjectService dataObjectService,
             IRepository<Feature> features)
         {
             _mapper = mapper;

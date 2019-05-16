@@ -9,11 +9,11 @@ namespace Aveneo.TestExcercise.Web.Controllers
 {
     public class DataObjectsController : Controller
     {
-        private _IDataObjectService _dataObjectService { get; }
+        private IDataObjectService _dataObjectService { get; }
         private IDataObjectViewModelService _dataObjectViewModelService { get; }
 
         public DataObjectsController(
-            _IDataObjectService dataObjectsService,
+            IDataObjectService dataObjectsService,
             IDataObjectViewModelService dataObjectsViewModelService)
         {
             _dataObjectService = dataObjectsService;

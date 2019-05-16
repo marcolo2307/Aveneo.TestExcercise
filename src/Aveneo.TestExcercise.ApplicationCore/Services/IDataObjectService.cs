@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Aveneo.TestExcercise.ApplicationCore.Services
 {
-    public interface _IDataObjectService
+    public interface IDataObjectService
     {
         IRepository<DataObject> DataObjects { get; }
 

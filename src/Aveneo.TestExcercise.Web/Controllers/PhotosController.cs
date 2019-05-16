@@ -15,10 +15,10 @@ namespace Aveneo.TestExcercise.Web.Controllers
     public class PhotosController : ControllerBase
     {
 
-        private _IDataObjectService _dataObjectService { get; }
+        private IDataObjectService _dataObjectService { get; }
 
         public PhotosController(
-            _IDataObjectService dataObjectService)
+            IDataObjectService dataObjectService)
         {
             _dataObjectService = dataObjectService;
         }
