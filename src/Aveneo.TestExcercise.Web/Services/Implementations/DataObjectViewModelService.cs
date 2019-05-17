@@ -100,7 +100,29 @@ namespace Aveneo.TestExcercise.Web.Services.Implementations
 
         public async Task SaveEditAsync(DataObjectEditViewModel viewModel)
         {
-            var dataObject = await _dataObjectService.DataObjects.FindByIdAsync(viewModel.Id);
+            var dataObject = new DataObject();
+
+            dataObject.Name = viewModel.Name;
+            dataObject.Description = viewModel.Description;
+            dataObject.Price = viewModel.Price;
+            dataObject.Location = new Geography
+            {
+                Latitude = viewModel.Latitude,
+                Longitude = viewModel.Longitude
+            };
+
+            await _dataObjectService.DataObjects.CreateAsync(dataObject);
+
+            if (viewModel.SelectedFeatures == null)
+                viewModel.SelectedFeatures = new int[] { };
+
+            var features = await _features.WhereAsync(f => viewModel.SelectedFeatures.Contains(f.Id));
+            await _dataObjectService.SetFeaturesAsync(dataObject, features);
+        }
+
+        public async Task SaveEditAsync(int id, DataObjectEditViewModel viewModel)
+        {
+            var dataObject = await _dataObjectService.DataObjects.FindByIdAsync(id);
 
             dataObject.Name = viewModel.Name;
             dataObject.Description = viewModel.Description;
