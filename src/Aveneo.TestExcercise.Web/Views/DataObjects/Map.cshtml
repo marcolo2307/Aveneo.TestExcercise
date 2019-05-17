@@ -1,0 +1,28 @@
+﻿@model IEnumerable<DataObjectDetailsViewModel>
+
+@{
+    ViewData["Title"] = "Map";
+}
+
+<h1>Map</h1>
+
+<div id="map" style="height: 500px;"></div>
+
+<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+        integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+        crossorigin=""></script>
+
+<script src="~/js/map.js"></script>
+
+<script>
+@{ 
+    foreach (var vm in Model)
+    {
+        var function = "createPoint([";
+        function += vm.Latitude + "," + vm.Longitude + "], ";
+        function += "'" + vm.Name + "', ";
+        function += "'" + vm.DefaultPhoto + "');";
+        @Html.Raw(function);
+    }
+}
+</script>

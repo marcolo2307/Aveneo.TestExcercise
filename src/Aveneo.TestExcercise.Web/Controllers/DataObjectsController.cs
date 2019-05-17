@@ -38,6 +38,15 @@ namespace Aveneo.TestExcercise.Web.Controllers
             return View(viewModels);
         }
 
+        // GET: DataObjects
+        public async Task<IActionResult> Map()
+        {
+            var dataObjects = await _dataObjectService.DataObjects.GetAllAsync();
+            var viewModels = await _dataObjectViewModelService.GetDetailsAsync(dataObjects);
+
+            return View(viewModels);
+        }
+
         // GET: DataObjects/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -112,7 +121,7 @@ namespace Aveneo.TestExcercise.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                await _dataObjectViewModelService.SaveEditAsync(viewModel);
+                await _dataObjectViewModelService.SaveEditAsync(id, viewModel);
 
                 return RedirectToAction(nameof(Index));
             }

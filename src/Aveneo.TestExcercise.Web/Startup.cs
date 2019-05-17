@@ -41,7 +41,7 @@ namespace Aveneo.TestExcercise.Web
 
             app.UseMvc(routes =>
             {
-                routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                routes.MapRoute("default", "{controller=DataObjects}/{action=Map}/{id?}");
             });
         }
     }
